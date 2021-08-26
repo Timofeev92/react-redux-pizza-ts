@@ -1,23 +1,39 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useState } from 'react'
 import { FC } from 'react'
 
-
 interface SortPopupProps {
-    items: Array<any>
+    items: Array<any>,
+    activeSortType: any
+    onClickSortType: Function
 }
 
-const SortPopup: FC<SortPopupProps> = ({ items }) => {
-    const [visiblePopup, setVisiblePopup] = useState(false)
-    const [activeItem, setActiveItem] = useState(items[0].name)
+const SortPopup: FC<SortPopupProps> = React.memo(({ items, onClickSortType, activeSortType }) => {
 
-    const onClickSort = (index: any) => {
-        setActiveItem(index)
+    const [visiblePopup, setVisiblePopup] = useState(false)
+    const activeLabel = items.find(obj => obj.type === activeSortType).name
+
+    //создание ссылки на DOM элемент
+    const sortRef = useRef<HTMLDivElement>(null)
+    const handleOutsideClick = (event: any) => {
+        const path = event.path || (event.composedPath && event.composedPath()) || event.composedPath(event.target);
+        if (!path.includes(sortRef.current)) {
+            setVisiblePopup(false)
+        }
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('click', handleOutsideClick)
+    }, [])
+
+    const onSelectItem = (obj: any) => {
+        onClickSortType(obj)
         setVisiblePopup(false)
     }
 
     return (
-        <div className="sort">
+        <div ref={sortRef} //Элемент для useRef
+            className="sort">
             <div className="sort__label">
                 <svg
                     width="10"
@@ -34,19 +50,19 @@ const SortPopup: FC<SortPopupProps> = ({ items }) => {
                 <b>Сортировка по:</b>
                 <span
                     onClick={() => setVisiblePopup(!visiblePopup)}>
-                    {activeItem}
+                    {activeLabel}
                 </span>
             </div>
             {visiblePopup &&
                 <div className="sort__popup">
                     <ul>
-                        {items && items.map((name, index) => (
+                        {items && items.map((obj, index) => (
                             <li
-                                onClick={() => onClickSort(index)}
-                                className={activeItem === index ? 'active' : ''}
-                                key={`${name}_${index}`}
+                                onClick={() => onSelectItem(obj)}
+                                className={activeSortType === obj.type ? 'active' : ''}
+                                key={`${obj.type}_${index}`}
                             >
-                                {name}
+                                {obj.name}
                             </li>
                         ))
                         }
@@ -54,6 +70,6 @@ const SortPopup: FC<SortPopupProps> = ({ items }) => {
                 </div>}
         </div>
     )
-}
+})
 
 export default SortPopup

@@ -1,36 +1,30 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 
 interface CategoriesProps {
-    items: Array<string>,
+    items: Array<String>,
+    onClickCategory: Function,
+    activeCategory: number
 }
 
-
-
-const Categories: FC<CategoriesProps> = ({ items, }) => {
-
-    const [activeItem, setActiveItem] = useState(null)
-
-    const onSelectItem = (index: any) => {
-        setActiveItem(index)
-    }
+const Categories: FC<CategoriesProps> = React.memo(({ items, onClickCategory, activeCategory }) => {
 
     return (
         <div className="categories">
             <ul>
-                <li className={activeItem === null ? 'active' : ''}
-                    onClick={() => onSelectItem(null)} > Все
+                <li className={activeCategory === null ? 'active' : ''}
+                    onClick={() => onClickCategory(null)} > Все
                 </li>
                 {
                     items && items.map((name, index) => (
-                        <li className={activeItem === index ? 'active' : ''}
+                        <li className={activeCategory === index ? 'active' : ''}
                             key={`${name}_${index}`}
-                            onClick={() => onSelectItem(index)}
+                            onClick={() => onClickCategory(index)}
                         >{name}</li>
                     ))
                 }
             </ul>
         </div>
     )
-}
+})
 
 export default Categories

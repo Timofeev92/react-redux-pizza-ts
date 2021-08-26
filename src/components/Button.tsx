@@ -1,19 +1,23 @@
 import classNames from 'classnames'
-import React, { Children } from 'react'
+import React, { FC } from 'react'
 
 interface ButtonProps {
     outline?: boolean,
-    className: string,
+    className?: string,
+    children?: any,
+    onClick?: () => void
 }
 
-const Button: React.FC<ButtonProps> = ({ outline, children, className }) => {
+const Button: FC<ButtonProps> = React.memo(({ outline, children, className, onClick }) => {
     return (
-        <button className={classNames('button', className, {
-            "button--outline": outline
-        })}>
+        <button
+            onClick={onClick}
+            className={classNames('button', className, {
+                "button--outline": outline,
+            })}>
             {children}
         </button>
     )
-}
+})
 
 export default Button

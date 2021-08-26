@@ -1,25 +1,24 @@
-import React, { useState } from 'react'
-import { Header, Categories, SortPopup } from './components/index'
+import React from 'react'
+import { Header, } from './components/index'
+import { Redirect, Route, Switch } from 'react-router-dom'
+import { Home, Cart } from './pages/index'
+import { FC } from 'react'
 
 
-
-const App = () => {
-
-
+const App: FC = React.memo(() => {
   return (
     <div className="wrapper">
       <Header />
       <div className="content">
-        <div className="container">
-          <div className="content__top">
-            <Categories
-              items={['Vzcysd', 'asdasdasd', 'asdaas', 'thtrhh']} />
-            <SortPopup items={['популярности', 'алфавиту', 'рейтингу']} />
-          </div>
-        </div>
+        <Switch>
+          <Route path={'/'} component={Home} exact />
+          <Route path={'/cart'} component={Cart} />
+          <Redirect to={'/'} />
+        </Switch>
+
       </div>
     </div>
   )
-}
+})
 
 export default App

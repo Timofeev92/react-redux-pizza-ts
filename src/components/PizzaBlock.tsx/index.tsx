@@ -1,28 +1,87 @@
+import classNames from 'classnames'
 import React from 'react'
+import { useState, FC } from 'react'
+import { Button } from '../index'
 
-const PizzaBlock = () => {
+interface PizzaBlockProps {
+    id: number
+    name: string
+    price: number
+    imageUrl: string
+    types: Array<number>
+    sizes: Array<number>
+    onClickAddPizza: Function
+    addedCount: number
+}
+
+const PizzaBlock: FC<PizzaBlockProps> = React.memo(({ id, name, imageUrl, price, types, sizes, onClickAddPizza, addedCount }) => {
+    const availableTypes = ['тонкое', 'традиционное']
+    const availableSizes = [26, 30, 40]
+
+    const [activeType, setActiveType] = useState(types[0])
+    const [activeSize, setActiveSize] = useState(0)
+
+    const onAddPizza = () => {
+        const obj = {
+            id,
+            name,
+            imageUrl,
+            price,
+            size: availableSizes[activeSize],
+            type: availableTypes[activeType]
+        }
+        onClickAddPizza(obj)
+    }
+
+
+    const onSelectType = (index: number) => {
+        setActiveType(index)
+    }
+
+    const onSelectSize = (index: number) => {
+        setActiveSize(index)
+    }
+
     return (
         <div className="pizza-block">
             <img
                 className="pizza-block__image"
-                src="https://dodopizza-a.akamaihd.net/static/Img/Products/Pizza/ru-RU/b750f576-4a83-48e6-a283-5a8efb68c35d.jpg"
+                src={imageUrl}
                 alt="Pizza"
             />
-            <h4 className="pizza-block__title">Чизбургер-пицца</h4>
+            <h4 className="pizza-block__title">{name}</h4>
             <div className="pizza-block__selector">
                 <ul>
-                    <li className="active">тонкое</li>
-                    <li>традиционное</li>
+                    {
+                        availableTypes.map((type, index) => (
+                            <li
+                                onClick={() => onSelectType(index)}
+                                className={classNames({
+                                    active: activeType === index,
+                                    disabled: !types.includes(index)
+                                })}
+                                key={`${type}_${index}`}>{type}</li>
+                        ))
+                    }
                 </ul>
                 <ul>
-                    <li className="active">26 см.</li>
-                    <li>30 см.</li>
-                    <li>40 см.</li>
+                    {
+                        availableSizes.map((size, index) => (
+                            <li
+                                onClick={() => onSelectSize(index)}
+                                className={classNames({
+                                    active: activeSize === index,
+                                    disabled: !sizes.includes(size)
+                                })}
+                                key={`${size}_${index}`}>{size}</li>
+                        ))
+                    }
                 </ul>
             </div>
             <div className="pizza-block__bottom">
-                <div className="pizza-block__price">от 395 ₽</div>
-                <div className="button button--outline button--add">
+                <div className="pizza-block__price">от {price} ₽</div>
+                <Button onClick={onAddPizza}
+                    className="button--add" outline >
                     <svg
                         width="12"
                         height="12"
@@ -36,11 +95,11 @@ const PizzaBlock = () => {
                         />
                     </svg>
                     <span>Добавить</span>
-                    <i>2</i>
-                </div>
+                    {addedCount && <i>{addedCount}</i>}
+                </Button>
             </div>
         </div>
     )
-}
+})
 
 export default PizzaBlock
